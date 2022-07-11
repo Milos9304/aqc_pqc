@@ -46,8 +46,8 @@ std::vector<dataset_instance> read_file(std::string dir_path, std::string file_n
     		pauliOpts.push_back(q == i ? 3 : 0); //PauliZ*/
 
 		for(int j = i+1; j < cols; ++j){
-			constant += data[i * cols+j] / 2.;
-			coeffs.push_back(data[i * cols+j]); //wij
+			constant -= data[i * cols+j] / 2.;
+			coeffs.push_back(data[i * cols+j] * 0.5); //wij
 	    	for(int q = 0; q < shape[0]; ++q)
 	    		pauliOpts.push_back((q == i || q == j) ? 3 : 0); //PauliZ*/
     	}

@@ -11,9 +11,6 @@ int main(int ac, char** av){
 	int seed = 0;
 	int loglevel = 0;
 
-	FastVQA::AcceleratorOptions acceleratorOptions;
-	acceleratorOptions.accelerator_type = "quest";
-
 	OptionParser op("Allowed options");
 	auto help_option     = op.add<Switch>("h", "help", "produce help message");
 	auto log_level       = op.add<Value<int>>("", "loglevel", "0 - debug, 1 - info, 2 - warning, 3 - error", 0);
@@ -34,10 +31,25 @@ int main(int ac, char** av){
 	seed = seed_option->value();
 	logi("Using seed " + std::to_string(seed), loglevel);
 
+	FastVQA::AqcPqcAcceleratorOptions acceleratorOptions;
+	acceleratorOptions.accelerator_type = "quest";
+	acceleratorOptions.nbSteps = 50;
+	acceleratorOptions.ansatz_name = "Ry_CNOT_all2all_Rz";
+
 	std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
 	for(auto &instance : dataset){
-		std::cout << std::get<0>(instance) << std::endl;
-		std::cout << std::get<1>(instance).getHamiltonianString(1) << std::endl;
+		std::cout << "Running " << std::get<0>(instance) << std::endl;
+		//std::cout << h1.getHamiltonianString(1) << std::endl;
+
+		FastVQA::Hamiltonian h1 = std::get<1>(instance);
+		FastVQA::AqcPqcAccelerator accelerator(acceleratorOptions);
+
+		FastVQA::Hamiltonian h0(h1.nbQubits);
+		h0.initializeMinusSigmaXHamiltonian();
+
+		accelerator.initialize(&h0, &h1);
+		accelerator.run();
+
 	}
 
 	return 0;

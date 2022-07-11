@@ -15,8 +15,7 @@ for num_qubits in [6,8]:
         print("Offset:", offset)
         print("Ising Hamiltonian:")
         print(str(qubitOp))
-        print()
-        
+        print()      
         
         with open('andromeda/'+str(num_qubits)+'_'+str(seed)+'.npy', 'wb') as f:
             np.save(f, w)
