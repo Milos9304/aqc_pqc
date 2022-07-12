@@ -38,7 +38,7 @@ int main(int ac, char** av){
 
 	std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
 	for(auto &instance : dataset){
-		std::cout << "Running " << std::get<0>(instance) << std::endl;
+		logi("Running " + std::get<0>(instance));
 		//std::cout << h1.getHamiltonianString(1) << std::endl;
 
 		FastVQA::Hamiltonian h1 = std::get<1>(instance);
