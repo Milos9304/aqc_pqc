@@ -16,6 +16,7 @@ message(
 )
 
 find_package(FastVQA)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 #find_package(MPI)
 #if(MPI_FOUND AND DISTRIBUTED)
@@ -37,4 +38,4 @@ add_executable(${PROJECT_NAME} ${SRC_ORIG})
 include_directories(
 	${PROJECT_SOURCE_DIR}/src
 )
-target_link_libraries(${PROJECT_NAME} fastVQA::FastVQA) #gmpxx gmp m)
+target_link_libraries(${PROJECT_NAME} fastVQA::FastVQA Eigen3::Eigen) #gmpxx gmp m)
