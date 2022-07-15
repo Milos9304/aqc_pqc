@@ -59,8 +59,8 @@ std::vector<dataset_instance> read_file(std::string dir_path, std::string file_n
 	for(int q = 0; q < shape[0]; ++q)
 		pauliOpts.push_back(0);
 
-    FastVQA::Hamiltonian h(shape[0], coeffs, pauliOpts);
-    res.push_back(std::pair<std::string, FastVQA::Hamiltonian>(file_name, h));
+    FastVQA::PauliHamiltonian h(shape[0], coeffs, pauliOpts);
+    res.push_back(std::pair<std::string, FastVQA::PauliHamiltonian>(file_name, h));
 
 	return res;
 }

@@ -3,6 +3,7 @@
 #include "FastVQA/fastVQA.h"
 
 #include "read_dataset.h"
+#include <algorithm>
 
 using namespace popl;
 
@@ -35,16 +36,23 @@ int main(int ac, char** av){
 	acceleratorOptions.accelerator_type = "quest";
 	acceleratorOptions.nbSteps = 50;
 	acceleratorOptions.ansatz_name = "Ry_CNOT_all2all_Rz";
+	acceleratorOptions.compareWithClassicalEigenSolver = true;
 
 	std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
+	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
+	int i = 0;
 	for(auto &instance : dataset){
-		logi("Running " + std::get<0>(instance));
-		//std::cout << h1.getHamiltonianString(1) << std::endl;
 
-		FastVQA::Hamiltonian h1 = std::get<1>(instance);
+		if(i++ != 0)
+			continue;
+
+		logi("Running " + std::get<0>(instance));
+		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
+		//std::cout << h1.getPauliHamiltonianString(1) << std::endl;
+
 		FastVQA::AqcPqcAccelerator accelerator(acceleratorOptions);
 
-		FastVQA::Hamiltonian h0(h1.nbQubits);
+		FastVQA::PauliHamiltonian h0(h1.nbQubits);
 		h0.initializeMinusSigmaXHamiltonian();
 
 		accelerator.initialize(&h0, &h1);
