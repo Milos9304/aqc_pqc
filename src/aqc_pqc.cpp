@@ -37,19 +37,23 @@ int main(int ac, char** av){
 	acceleratorOptions.nbSteps = 50;
 	acceleratorOptions.ansatz_name = "Ry_CNOT_all2all_Rz";
 	acceleratorOptions.compareWithClassicalEigenSolver = true;
+	acceleratorOptions.outputLogToFile = true;
 
 	std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
 	int i = 0;
 	for(auto &instance : dataset){
 
-		if(i++ != 0)
-			continue;
+		/*if(i++ != 1)
+			continue;*/
 
-		logi("Running " + std::get<0>(instance));
+		std::string instance_name = std::get<0>(instance);
+
+		logi("Running " + instance_name);
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
 		//std::cout << h1.getPauliHamiltonianString(1) << std::endl;
 
+		acceleratorOptions.logFileName = instance_name.substr(0, instance_name.size()-4)+".log";
 		FastVQA::AqcPqcAccelerator accelerator(acceleratorOptions);
 
 		FastVQA::PauliHamiltonian h0(h1.nbQubits);
