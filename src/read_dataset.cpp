@@ -8,9 +8,9 @@
 
 #include "FastVQA/fastVQA.h"
 
-std::vector<dataset_instance> read_file(std::string dir_path, std::string file_name){
+std::vector<pre_instance> read_file(std::string dir_path, std::string file_name){
 
-	std::vector<dataset_instance> res;
+	std::vector<pre_instance> res;
 
 	std::string fn = file_name;
 
@@ -32,7 +32,7 @@ std::vector<dataset_instance> read_file(std::string dir_path, std::string file_n
     if(shape[0] != shape[1])
     	throw_runtime_error("MaxCut adjacency matrix should be square");
 
-    std::vector<double> coeffs;
+    std::vector<qreal> coeffs;
     std::vector<int> pauliOpts;
 
     int rows = shape[0], cols = shape[1];
@@ -65,6 +65,23 @@ std::vector<dataset_instance> read_file(std::string dir_path, std::string file_n
 	return res;
 }
 
+std::map<std::string, long long int> read_solutions_txt(std::ifstream *f){
+
+	std::map<std::string, long long int> res;
+	std::string line;
+	while (std::getline(*f, line)){
+	    std::istringstream iss(line);
+	    std::string name;
+	    long long int sol;
+	    if (!(iss >> name >> sol))
+	    	throw_runtime_error("Invalid solutions.txt format");
+	    res[name] = sol;
+	}
+
+	return res;
+
+}
+
 std::vector<dataset_instance> read_dataset(std::string name){
 
 	std::vector<dataset_instance> res;
@@ -73,14 +90,31 @@ std::vector<dataset_instance> read_dataset(std::string name){
 	char * dir_path = new char [dir_path_s.length()+1];
 	std::strcpy (dir_path,  dir_path_s.c_str());
 
+	std::ifstream file(std::string(dir_path)+"/solutions.txt");
+	if (!file.is_open())
+		throw_runtime_error("Error opening solutions.txt");
+	std::map<std::string, long long int> solutions = read_solutions_txt(&file);
+	file.close();
+
 	auto dir = opendir(dir_path);
 	while (auto f = readdir(dir)) {
 		if (!f->d_name || f->d_name[0] == '.')
 			continue; // Skip everything that starts with a dot
-		auto new_instances = read_file(dir_path, f->d_name);
-		res.insert(std::end(res), std::begin(new_instances), std::end(new_instances));
+		if(!strcmp(f->d_name, "solutions.txt")){
+
+			continue;
+		}
+		for(auto &instance : read_file(dir_path, f->d_name)){
+			std::string name = std::get<0>(instance);
+			if(!solutions.count(name.substr(0, name.size()-4)))
+				throw_runtime_error("Entry missing in solutions.txt");
+			res.push_back(dataset_instance(name, std::get<1>(instance), solutions[name.substr(0, name.size()-4)]));
+		}
+		//res.insert(std::end(res), std::begin(new_instances), std::end(new_instances));
 	}
 	closedir(dir);
 
 	return res;
 }
+
+

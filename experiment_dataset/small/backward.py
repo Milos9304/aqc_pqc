@@ -7,9 +7,9 @@ from qiskit_optimization.algorithms import MinimumEigenOptimizer
 
 opt_vals = []
 
-for num_qubits in [6,8]:
-    for seed in [1,2,3]:
-        graph = nx.random_regular_graph(3, num_qubits, seed=seed)
+for num_qubits in [2]:
+    for seed in [1]:
+        graph = nx.random_regular_graph(1, num_qubits, seed=seed)
         w = nx.to_numpy_matrix(graph, nodelist=sorted(graph.nodes()), dtype=np.intc)
         
         print(w)
@@ -24,12 +24,12 @@ for num_qubits in [6,8]:
         result = exact.solve(qp)
         print(result)
         
-        with open('andromeda/'+str(num_qubits)+'_'+str(seed)+'.npy', 'wb') as f:
+        with open('backward/'+str(num_qubits)+'_'+str(seed)+'.npy', 'wb') as f:
             np.save(f, w)
         
         opt_vals.append([str(num_qubits)+'_'+str(seed), result.x])
 
-with open('andromeda/solutions.txt', 'w') as f:
+with open('backward/solutions.txt', 'w') as f:
     for o in opt_vals:
         val = 0
         binary = str(list(map(int, o[1])))[1:-1].replace(',','').replace(' ','')#[::-1]
