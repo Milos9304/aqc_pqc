@@ -35,16 +35,16 @@ int main(int ac, char** av){
 	FastVQA::AqcPqcAcceleratorOptions acceleratorOptions;
 	acceleratorOptions.log_level = log_level->value();
 	acceleratorOptions.accelerator_type = "quest";
-	acceleratorOptions.nbSteps = 5;
-	acceleratorOptions.ansatz_name = "Ry_Cz_all2all_Ry";//"Ry_CNOT_all2all_Rz";
+	acceleratorOptions.nbSteps = 30;
+	acceleratorOptions.ansatz_name = "Ry_CNOT_nn_Rz_CNOT_Rz";//"Ry_CNOT_all2all_Rz";
 	acceleratorOptions.compareWithClassicalEigenSolver = true;
 	acceleratorOptions.outputLogToFile = true;
 	acceleratorOptions.checkHessian = true;
 	acceleratorOptions.printGroundStateOverlap = true;
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
-	//std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
-	std::vector<dataset_instance> dataset = read_dataset("small/backward");
+	std::vector<dataset_instance> dataset = read_dataset("small/andromeda");
+	//std::vector<dataset_instance> dataset = read_dataset("small/backward");
 
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
 	int i = 0;
@@ -65,7 +65,7 @@ int main(int ac, char** av){
 		FastVQA::AqcPqcAccelerator accelerator(acceleratorOptions);
 
 		FastVQA::PauliHamiltonian h0(h1.nbQubits);
-		h0.initializeMinusSigmaXHamiltonian();
+		h0.initializeSumMinusSigmaXHamiltonian();
 
 		accelerator.initialize(&h0, &h1);
 		accelerator.run();

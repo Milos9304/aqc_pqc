@@ -40,4 +40,8 @@ add_executable(${PROJECT_NAME} ${SRC_ORIG})
 include_directories(
 	${PROJECT_SOURCE_DIR}/src
 )
-target_link_libraries(${PROJECT_NAME} fastVQA::FastVQA Eigen3::Eigen) #gmpxx gmp m)
+target_link_libraries(${PROJECT_NAME} fastVQA::FastVQA Eigen3::Eigen QuEST) #gmpxx gmp m)
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+    QuEST_PREC=4
+)
