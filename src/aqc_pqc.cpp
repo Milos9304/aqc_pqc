@@ -17,6 +17,7 @@ int main(int ac, char** av){
 	auto log_level       = op.add<Value<int>>("l", "loglevel", "0 - debug, 1 - info, 2 - warning, 3 - error", 1);
 	auto seed_option 	 = op.add<Value<int>>("", "seed", "seed for the experiments", seed);
 	auto round_decimals	 = op.add<Value<int>>("r", "round", "round to n decimal places. n=-1 avoids rounding", 5);
+	auto opt_strategy    = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
 
 	op.parse(ac, av);
 
@@ -30,12 +31,16 @@ int main(int ac, char** av){
 	}
 	loglevel = log_level->value();
 
+	if(opt_strategy->value() < 0 || opt_strategy->value() > 1)
+		throw_runtime_error("Invalid opt_strategy value.");
+
 	seed = seed_option->value();
 	logi("Using seed " + std::to_string(seed), loglevel);
 
 	FastVQA::AqcPqcAcceleratorOptions acceleratorOptions;
 	acceleratorOptions.log_level = log_level->value();
 	acceleratorOptions.roundDecimalPlaces = round_decimals->value();
+	acceleratorOptions.optStrategy = opt_strategy->value();
 	acceleratorOptions.accelerator_type = "quest";
 	acceleratorOptions.nbSteps = 10;//59;
 	acceleratorOptions.ansatz_name = "Ry_CNOT_nn_Rz_CNOT_Rz";//"Ry_CNOT_all2all_Rz";
