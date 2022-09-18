@@ -26,38 +26,34 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
 
 	std::vector<unsigned long> shape;
 	bool fortran_order;
-	std::vector<int> data;
+	std::vector<double> data;
     npy::LoadArrayFromNumpy(dir_path+'/'+file_name, shape, fortran_order, data);
 
     if(shape[0] != shape[1])
     	throw_runtime_error("MaxCut adjacency matrix should be square");
 
+    int rows = shape[0], cols = shape[1];
+
     std::vector<qreal> coeffs;
     std::vector<int> pauliOpts;
-
-    int rows = shape[0], cols = shape[1];
 
     double constant=0;
 
     for(int i = 0; i < rows; ++i){
-
-    	/*coeffs.push_back(data[i * cols+i]);//wi=0
-    	for(int q = 0; q < shape[0]; ++q)
-    		pauliOpts.push_back(q == i ? 3 : 0); //PauliZ*/
-
 		for(int j = i+1; j < cols; ++j){
 			constant -= data[i * cols+j] / 2.;
 			coeffs.push_back(data[i * cols+j] * 0.5); //wij
 	    	for(int q = 0; q < shape[0]; ++q)
-	    		pauliOpts.push_back((q == i || q == j) ? 3 : 0); //PauliZ*/
+	    		pauliOpts.push_back((q == i || q == j) ? 3 : 0); //PauliZ
     	}
     	//res.push_back(std::pair<std::string, Hamiltonian>(file_name, h));
     }
 
     //identity
-	coeffs.push_back(constant);
+	/*coeffs.push_back(constant);
 	for(int q = 0; q < shape[0]; ++q)
-		pauliOpts.push_back(0);
+		pauliOpts.push_back(0);*/
+    logw("Identity not included for compatibility with Gianni's approach!"); //uncomment above
 
     FastVQA::PauliHamiltonian h(shape[0], coeffs, pauliOpts);
     res.push_back(std::pair<std::string, FastVQA::PauliHamiltonian>(file_name, h));
@@ -65,24 +61,35 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
 	return res;
 }
 
-std::map<std::string, long long int> read_solutions_txt(std::ifstream *f){
+std::map<std::string, std::vector<long long int>> read_maxcut_solutions_txt(std::ifstream *f){
 
-	std::map<std::string, long long int> res;
+	std::map<std::string, std::vector<long long int>> res;
 	std::string line;
 	while (std::getline(*f, line)){
 	    std::istringstream iss(line);
-	    std::string name;
-	    long long int sol;
-	    if (!(iss >> name >> sol))
-	    	throw_runtime_error("Invalid solutions.txt format");
-	    res[name] = sol;
+	    std::string name="";
+	    std::vector<long long int> sols;
+	    //if (!(iss >> name >> sol))
+	    //	throw_runtime_error("Invalid solutions.txt format");
+	    std::string temp;
+	    std::string x;
+	    while(std::getline(iss, temp, ' ')){
+	    	if (std::istringstream(temp) >> x) { // or std::stoi(), std::strtol(), etc
+	    		if(name == ""){
+	    			name = x;
+	    			continue;
+				}
+	    		sols.push_back(std::stoll(x));
+			}
+	    }
+	    res[name] = sols;
 	}
 
 	return res;
 
 }
 
-std::vector<dataset_instance> read_dataset(std::string name){
+std::vector<dataset_instance> read_maxcut_dataset(std::string name){
 
 	std::vector<dataset_instance> res;
 
@@ -93,7 +100,7 @@ std::vector<dataset_instance> read_dataset(std::string name){
 	std::ifstream file(std::string(dir_path)+"/solutions.txt");
 	if (!file.is_open())
 		throw_runtime_error("Error opening solutions.txt");
-	std::map<std::string, long long int> solutions = read_solutions_txt(&file);
+	std::map<std::string, std::vector<long long int>> solutions = read_maxcut_solutions_txt(&file);
 	file.close();
 
 	auto dir = opendir(dir_path);
