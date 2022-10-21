@@ -18,6 +18,8 @@ int main(int ac, char** av){
 	auto seed_option 	 = op.add<Value<int>>("", "seed", "seed for the experiments", seed);
 	auto round_decimals	 = op.add<Value<int>>("r", "round", "round to n decimal places. n=-1 avoids rounding", 5);
 	auto opt_strategy    = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
+	auto num_steps		 = op.add<Value<int>>("s", "steps", "number of steps", 20);
+	auto xtol			 = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
 
 	op.parse(ac, av);
 
@@ -42,16 +44,17 @@ int main(int ac, char** av){
 	acceleratorOptions.roundDecimalPlaces = round_decimals->value();
 	acceleratorOptions.optStrategy = opt_strategy->value();
 	acceleratorOptions.accelerator_type = "quest";
-	acceleratorOptions.nbSteps = 10;//59;
-	acceleratorOptions.ansatz_name = "Ry_CNOT_nn_Rz_CNOT_Rz";//"Ry_CNOT_all2all_Rz";
+	acceleratorOptions.nbSteps = num_steps->value();
+	acceleratorOptions.ansatz_name = "Ry_Cz_nn_Ry";/*"Ry_CNOT_nn_Rz_CNOT_Rz"*/;/**/;
+	acceleratorOptions.xtol = xtol->value();
 	acceleratorOptions.compareWithClassicalEigenSolver = true;
 	acceleratorOptions.outputLogToFile = true;
 	acceleratorOptions.checkHessian = true;
 	acceleratorOptions.printGroundStateOverlap = true;
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
-	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/cartwheel");
-	//std::vector<dataset_instance> dataset = read_dataset("small/backward");
+	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/eye_of_sauron");
+	//std::vector<dataset_instance> dataset = read_maxcut_dataset("small/backward");
 
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
 	//int i = 0;
@@ -64,7 +67,7 @@ int main(int ac, char** av){
 
 		logi("Running " + instance_name);
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
-		//std::cerr<<h1.getMatrixRepresentation2(false).block(0,0,5,5)<<std::endl;
+		//std::cerr<<h1.getMatrixRepresentation2(false)<<std::endl;throw;//.block(0,0,5,5)<<std::endl;
 
 		std::vector<long long int> solutions = std::get<2>(instance);
 		acceleratorOptions.solutions = solutions;
@@ -78,6 +81,8 @@ int main(int ac, char** av){
 
 		accelerator.initialize(&h0, &h1);
 		accelerator.run();
+
+		break;
 
 	}
 
