@@ -20,6 +20,7 @@ int main(int ac, char** av){
 	auto opt_strategy    = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
 	auto num_steps		 = op.add<Value<int>>("s", "steps", "number of steps", 20);
 	auto xtol			 = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
+	auto dataset_name	 = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
 
 	op.parse(ac, av);
 
@@ -35,6 +36,10 @@ int main(int ac, char** av){
 
 	if(opt_strategy->value() < 0 || opt_strategy->value() > 1)
 		throw_runtime_error("Invalid opt_strategy value.");
+
+	if(dataset_name->value() == ""){
+		throw_runtime_error("No dataset specified");
+	}
 
 	seed = seed_option->value();
 	logi("Using seed " + std::to_string(seed), loglevel);
@@ -53,7 +58,7 @@ int main(int ac, char** av){
 	acceleratorOptions.printGroundStateOverlap = true;
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
-	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/eye_of_sauron");
+	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/"+dataset_name->value());
 	//std::vector<dataset_instance> dataset = read_maxcut_dataset("small/backward");
 
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
