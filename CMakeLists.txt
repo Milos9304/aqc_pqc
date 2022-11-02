@@ -17,7 +17,7 @@ message(
 
 set(CMAKE_BUILD_TYPE Release)
 
-find_package(FastVQA)
+find_package(FastVQA REQUIRED)
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 #find_package(MPI)
