@@ -120,6 +120,7 @@ std::vector<dataset_instance> read_maxcut_dataset(std::string name){
 		//res.insert(std::end(res), std::begin(new_instances), std::end(new_instances));
 	}
 	closedir(dir);
+	delete dir_path;
 
 	return res;
 }
