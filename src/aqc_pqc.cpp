@@ -21,6 +21,7 @@ int main(int ac, char** av){
 	auto num_steps		 = op.add<Value<int>>("s", "steps", "number of steps", 20);
 	auto xtol			 = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
 	auto dataset_name	 = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
+	auto q_select        = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
 
 	op.parse(ac, av);
 
@@ -68,10 +69,17 @@ int main(int ac, char** av){
 		//if(i++ != 0)
 		//	continue;
 
+
 		std::string instance_name = std::get<0>(instance);
 
-		logi("Running " + instance_name);
+
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
+
+		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
+			continue;
+
+		logi("Running " + instance_name);
+
 		//std::cerr<<h1.getMatrixRepresentation2(false)<<std::endl;throw;//.block(0,0,5,5)<<std::endl;
 
 		std::vector<long long int> solutions = std::get<2>(instance);
@@ -86,8 +94,6 @@ int main(int ac, char** av){
 
 		accelerator.initialize(&h0, &h1);
 		accelerator.run();
-
-		break;
 
 	}
 
