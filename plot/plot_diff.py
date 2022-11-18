@@ -26,8 +26,9 @@ for file_name in glob.glob("*.log"):
     #njfkdvkslnjk
     plt.plot(x, evals)
     plt.plot(x, expecs)
+    plt.title(file_name)
     plt.show()
-    
+        
     
     #plt.plot(evals)
     #plt.plot(expecs)
