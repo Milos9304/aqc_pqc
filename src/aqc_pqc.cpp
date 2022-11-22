@@ -22,6 +22,7 @@ int main(int ac, char** av){
 	auto xtol			   = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
 	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
 	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
+	auto s_select 		   = op.add<Value<int>>("", "seedselect", "if set, only this number of seed is being run. other experiments are skipped", -1);
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
 	auto eps_print   	   = op.add<Switch>("", "eps", "print all epsilons + inequality constraint");
 	auto time_limit_step   = op.add<Value<int>>("t", "time", "max time per step in seconds", 90);
@@ -69,7 +70,6 @@ int main(int ac, char** av){
 	//std::vector<dataset_instance> dataset = read_maxcut_dataset("small/backward");
 
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
-	//int i = 0;
 	for(auto &instance : dataset){
 
 		//if(i++ != 0)
@@ -77,11 +77,14 @@ int main(int ac, char** av){
 
 
 		std::string instance_name = std::get<0>(instance);
-
+		std::string a = instance_name.substr(instance_name.find('_') + 1);
 
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
+			continue;
+
+		if(s_select->value() > -1 && s_select->value() != std::stoi(a.substr(0, a.size()-4)))
 			continue;
 
 		logi("Running " + instance_name);

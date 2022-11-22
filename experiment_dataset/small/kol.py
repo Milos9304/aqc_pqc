@@ -91,11 +91,11 @@ for num_qubits in [10, 11, 12]:
         print(f'For the given instance the optimal cost is {best_cost} and the bitstrings corresponding to that are {costs[-1][1]}')
         
                 
-    with open('kol/'+str(num_qubits)+'_'+str(seed)+'.npy', 'wb') as f:
-        np.save(f, w)
+        with open('kol/'+str(num_qubits)+'_'+str(seed)+'.npy', 'wb') as f:
+            np.save(f, w)
         
-    opt_vals.append([str(num_qubits)+'_'+str(seed), costs[-1][1]])#result.x])
-    print(opt_vals)
+        opt_vals.append([str(num_qubits)+'_'+str(seed), costs[-1][1]])#result.x])
+        print(opt_vals)
 
 with open('kol/solutions.txt', 'w') as f:
     for o in opt_vals:
