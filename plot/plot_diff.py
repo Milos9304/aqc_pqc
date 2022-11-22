@@ -14,6 +14,7 @@ for file_name in glob.glob("*.log"):
     hes = {}
     i=0
     hes_eval = False
+    f_extended = False
     for line in f.readlines():
         #print(line)
         
@@ -21,11 +22,16 @@ for file_name in glob.glob("*.log"):
             hes[i] = list(map(float, line.split(' ')[1:]))
             i+=1
             hes_eval = True
-        else:
-            eval, expec = line[:-1].split(' ')[:2]
+        elif line.startswith("f: "):
+            eval, expec = line[:-1].split(' ')[1:3]
             evals.append(float(eval))
             expecs.append(float(expec))
+            f_extended = True
             #y.append(abs(float(eval)-float(expec)))
+        elif line.startswith("exp: "):
+            evals.append(float(line.split(' ')[1]))
+        else:
+            print("error")
         
     
     x = np.linspace(0, len(evals)-1, len(evals))
@@ -51,7 +57,8 @@ for file_name in glob.glob("*.log"):
             fourthHES.append(hes[i][4])
     
     plt.plot(x, evals, 'orange')
-    plt.plot(x, expecs, 'blue')
+    if f_extended:
+        plt.plot(x, expecs, 'blue')
     
     if hes_eval:
         plt.plot(x, firstHES, color=(1, 0, 0))

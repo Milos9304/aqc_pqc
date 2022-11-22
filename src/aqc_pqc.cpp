@@ -13,15 +13,17 @@ int main(int ac, char** av){
 	int loglevel = 0;
 
 	OptionParser op("Allowed options");
-	auto help_option     = op.add<Switch>("h", "help", "produce help message");
-	auto log_level       = op.add<Value<int>>("l", "loglevel", "0 - debug, 1 - info, 2 - warning, 3 - error", 1);
-	auto seed_option 	 = op.add<Value<int>>("", "seed", "seed for the experiments", seed);
-	auto round_decimals	 = op.add<Value<int>>("r", "round", "round to n decimal places. n=-1 avoids rounding", 5);
-	auto opt_strategy    = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
-	auto num_steps		 = op.add<Value<int>>("s", "steps", "number of steps", 20);
-	auto xtol			 = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
-	auto dataset_name	 = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
-	auto q_select        = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
+	auto help_option       = op.add<Switch>("h", "help", "produce help message");
+	auto log_level         = op.add<Value<int>>("l", "loglevel", "0 - debug, 1 - info, 2 - warning, 3 - error", 1);
+	auto seed_option 	   = op.add<Value<int>>("", "seed", "seed for the experiments", seed);
+	auto round_decimals	   = op.add<Value<int>>("r", "round", "round to n decimal places. n=-1 avoids rounding", 5);
+	auto opt_strategy      = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
+	auto num_steps		   = op.add<Value<int>>("s", "steps", "number of steps", 20);
+	auto xtol			   = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
+	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
+	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
+	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
+
 
 	op.parse(ac, av);
 
@@ -53,7 +55,7 @@ int main(int ac, char** av){
 	acceleratorOptions.nbSteps = num_steps->value();
 	acceleratorOptions.ansatz_name = "Ry_Cz_nn_Ry";/*"Ry_CNOT_nn_Rz_CNOT_Rz"*/;/**/;
 	acceleratorOptions.xtol = xtol->value();
-	acceleratorOptions.compareWithClassicalEigenSolver = true;
+	acceleratorOptions.compareWithClassicalEigenSolver = classical_esolver->is_set();
 	acceleratorOptions.outputLogToFile = true;
 	acceleratorOptions.checkHessian = true;
 	acceleratorOptions.printGroundStateOverlap = true;
