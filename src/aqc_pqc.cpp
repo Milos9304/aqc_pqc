@@ -24,6 +24,8 @@ int main(int ac, char** av){
 	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
 	auto eps_print   	   = op.add<Switch>("", "eps", "print all epsilons + inequality constraint");
+	auto time_limit_step   = op.add<Value<int>>("t", "time", "max time per step in seconds", 90);
+
 
 	op.parse(ac, av);
 
@@ -60,6 +62,7 @@ int main(int ac, char** av){
 	acceleratorOptions.checkHessian = true;
 	acceleratorOptions.printGroundStateOverlap = true;
 	acceleratorOptions.printEpsilons = eps_print->is_set();
+	acceleratorOptions.time_limit_step = time_limit_step->value();
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
 	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/"+dataset_name->value());
