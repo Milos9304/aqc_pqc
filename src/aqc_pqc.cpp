@@ -72,10 +72,6 @@ int main(int ac, char** av){
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
 	for(auto &instance : dataset){
 
-		//if(i++ != 0)
-		//	continue;
-
-
 		std::string instance_name = std::get<0>(instance);
 		std::string a = instance_name.substr(instance_name.find('_') + 1);
 
