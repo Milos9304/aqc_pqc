@@ -20,6 +20,7 @@ int main(int ac, char** av){
 	auto opt_strategy      = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
 	auto num_steps		   = op.add<Value<int>>("s", "steps", "number of steps", 20);
 	auto xtol			   = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
+	auto catol			   = op.add<Value<double>>("c", "catol", "catol", 0.0002);
 	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
 	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
 	auto s_select 		   = op.add<Value<int>>("", "seedselect", "if set, only this number of seed is being run. other experiments are skipped", -1);
@@ -58,6 +59,7 @@ int main(int ac, char** av){
 	acceleratorOptions.nbSteps = num_steps->value();
 	acceleratorOptions.ansatz_name = "Ry_Cz_nn_Ry";/*"Ry_CNOT_nn_Rz_CNOT_Rz"*/;/**/;
 	acceleratorOptions.xtol = xtol->value();
+	acceleratorOptions.catol = catol->value();
 	acceleratorOptions.compareWithClassicalEigenSolver = classical_esolver->is_set();
 	acceleratorOptions.outputLogToFile = true;
 	acceleratorOptions.checkHessian = true;
