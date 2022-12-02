@@ -27,6 +27,7 @@ int main(int ac, char** av){
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
 	auto eps_print   	   = op.add<Switch>("", "eps", "print all epsilons + inequality constraint");
 	auto time_limit_step   = op.add<Value<int>>("t", "time", "max time per step in seconds", 90);
+	auto log_prefix		   = op.add<Value<std::string>>("", "logprefix", "log file prefix", "");
 
 
 	op.parse(ac, av);
@@ -93,7 +94,7 @@ int main(int ac, char** av){
 		acceleratorOptions.solutions = solutions;
 		//std::cout << h1.getPauliHamiltonianString(1) << std::endl;
 
-		acceleratorOptions.logFileName = instance_name.substr(0, instance_name.size()-4)+".log";
+		acceleratorOptions.logFileName = log_prefix->value()+instance_name.substr(0, instance_name.size()-4)+".log";
 		FastVQA::AqcPqcAccelerator accelerator(acceleratorOptions);
 
 		FastVQA::PauliHamiltonian h0(h1.nbQubits);
