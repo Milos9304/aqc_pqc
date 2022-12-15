@@ -26,7 +26,7 @@ int main(int ac, char** av){
 	auto s_select 		   = op.add<Value<int>>("", "seedselect", "if set, only this number of seed is being run. other experiments are skipped", -1);
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
 	auto eps_print   	   = op.add<Switch>("", "eps", "print all epsilons + inequality constraint");
-	auto time_limit_step   = op.add<Value<int>>("t", "time", "max time per step in seconds", 90);
+	auto eval_limit_step   = op.add<Value<int>>("i", "iters", "max iterations per step", 600);
 	auto log_prefix		   = op.add<Value<std::string>>("", "logprefix", "log file prefix", "");
 
 
@@ -66,7 +66,7 @@ int main(int ac, char** av){
 	acceleratorOptions.checkHessian = true;
 	acceleratorOptions.printGroundStateOverlap = true;
 	acceleratorOptions.printEpsilons = eps_print->is_set();
-	acceleratorOptions.time_limit_step = time_limit_step->value();
+	acceleratorOptions.eval_limit_step = eval_limit_step->value();
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
 	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/"+dataset_name->value());
