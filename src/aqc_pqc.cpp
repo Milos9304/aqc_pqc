@@ -1,7 +1,6 @@
 #include "popl.hpp"
 #include "io/logger.h"
 #include "FastVQA/fastVQA.h"
-
 #include "read_dataset.h"
 #include <algorithm>
 
@@ -28,6 +27,7 @@ int main(int ac, char** av){
 	auto eps_print   	   = op.add<Switch>("", "eps", "print all epsilons + inequality constraint");
 	auto eval_limit_step   = op.add<Value<int>>("i", "iters", "max iterations per step", 600);
 	auto log_prefix		   = op.add<Value<std::string>>("", "logprefix", "log file prefix", "");
+	auto extract_evals	   = op.add<Switch>("", "evals", "save 10 eigenvalues to evals.txt only");
 
 
 	op.parse(ac, av);
@@ -85,6 +85,36 @@ int main(int ac, char** av){
 
 		if(s_select->value() > -1 && s_select->value() != std::stoi(a.substr(0, a.size()-4)))
 			continue;
+
+		if(extract_evals->is_set()){
+			Eigen::Matrix<qreal, Eigen::Dynamic, Eigen::Dynamic> m = h1.getMatrixRepresentation2(true);
+			std::vector<double> evals;
+			std::ofstream f(instance_name + "_evals.txt");
+
+			for(long long int i = 0; i < m.rows(); i++){
+				std::complex c = m(i,i);
+				if(c.imag() != 0)
+					loge("Imaginary part of eigenvalue is non-zero: " + std::to_string(c.imag()));
+				evals.push_back(c.real());
+			}
+			std::sort(evals.begin(), evals.end());
+			std::vector<double>::iterator it = evals.begin(), prev=evals.end();
+
+			size_t n = 10;
+			auto end = std::next(evals.begin(), std::min(n, evals.size()));
+
+			for(int i = 0; i < 10 && it != end; ++it){
+				if(*prev == *it)
+					continue;
+				i++;
+				f << *it << std::endl;
+				prev = it;
+			}
+
+			f.close();
+			continue;
+
+		}
 
 		logi("Running " + instance_name);
 
