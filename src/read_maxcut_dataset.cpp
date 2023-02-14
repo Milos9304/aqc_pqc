@@ -1,4 +1,4 @@
-#include "read_dataset.h"
+#include "read_maxcut_dataset.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -50,9 +50,9 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
     }
 
     //identity
-	/*coeffs.push_back(constant);
-	for(int q = 0; q < shape[0]; ++q)
-		pauliOpts.push_back(0);*/
+	//coeffs.push_back(constant);
+	//for(int q = 0; q < shape[0]; ++q)
+	//	pauliOpts.push_back(0);
     logw("Identity not included for compatibility with Gianni's approach!"); //uncomment above
 
     FastVQA::PauliHamiltonian h(shape[0], coeffs, pauliOpts);

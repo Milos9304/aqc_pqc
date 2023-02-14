@@ -1,7 +1,8 @@
 #include "popl.hpp"
 #include "io/logger.h"
 #include "FastVQA/fastVQA.h"
-#include "read_dataset.h"
+#include "read_maxcut_dataset.h"
+#include "read_nb_dataset.h"
 #include <algorithm>
 
 using namespace popl;
@@ -21,6 +22,7 @@ int main(int ac, char** av){
 	auto xtol			   = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
 	auto catol			   = op.add<Value<double>>("c", "catol", "catol", 0.0002);
 	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
+	auto nb_part_dataset   = op.add<Value<std::string>>("p", "dataset2", "Dataset name for number partitioning", "");
 	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
 	auto s_select 		   = op.add<Value<int>>("", "seedselect", "if set, only this number of seed is being run. other experiments are skipped", -1);
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
@@ -45,7 +47,7 @@ int main(int ac, char** av){
 	if(opt_strategy->value() < 0 || opt_strategy->value() > 1)
 		throw_runtime_error("Invalid opt_strategy value.");
 
-	if(dataset_name->value() == ""){
+	if(dataset_name->value() == "" &&  nb_part_dataset->value() == ""){
 		throw_runtime_error("No dataset specified");
 	}
 
@@ -69,10 +71,19 @@ int main(int ac, char** av){
 	acceleratorOptions.eval_limit_step = eval_limit_step->value();
 	acceleratorOptions.initialGroundState = FastVQA::InitialGroundState::PlusState;
 
-	std::vector<dataset_instance> dataset = read_maxcut_dataset("small/"+dataset_name->value());
+	std::vector<dataset_instance> dataset;
+	if(dataset_name -> is_set())
+		dataset = read_maxcut_dataset("small/"+dataset_name->value());
+	else if(nb_part_dataset -> is_set())
+		dataset = read_nb_part_dataset("small/"+nb_part_dataset->value());
+	else
+		throw_runtime_error("Must specify a dataset");
+
+
 	//std::vector<dataset_instance> dataset = read_maxcut_dataset("small/backward");
 
 	std::sort(dataset.begin(), dataset.end(), [](auto &a, auto &b){return 2*std::get<0>(a)[0]+std::get<0>(a)[2]<2*std::get<0>(b)[0]+std::get<0>(b)[2];});
+
 	for(auto &instance : dataset){
 
 		std::string instance_name = std::get<0>(instance);
