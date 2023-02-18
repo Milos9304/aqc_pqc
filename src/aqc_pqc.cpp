@@ -89,6 +89,8 @@ int main(int ac, char** av){
 		std::string instance_name = std::get<0>(instance);
 		std::string a = instance_name.substr(instance_name.find('_') + 1);
 
+		logi("Running " + instance_name);
+
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
@@ -99,6 +101,7 @@ int main(int ac, char** av){
 
 		if(extract_evals->is_set()){
 			Eigen::Matrix<qreal, Eigen::Dynamic, Eigen::Dynamic> m = h1.getMatrixRepresentation2(true);
+
 			std::vector<double> evals;
 			std::ofstream f(instance_name + "_evals.txt");
 
@@ -109,12 +112,11 @@ int main(int ac, char** av){
 				evals.push_back(c.real());
 			}
 			std::sort(evals.begin(), evals.end());
-			std::vector<double>::iterator it = evals.begin(), prev=evals.end();
+			std::vector<double>::iterator it = evals.begin(), prev=evals.end()-1;
 
 			size_t n = 10;
-			auto end = std::next(evals.begin(), std::min(n, evals.size()));
 
-			for(int i = 0; i < 10 && it != end; ++it){
+			for(int i = 0; i < n && it != evals.end(); ++it){
 				if(*prev == *it)
 					continue;
 				i++;
@@ -127,7 +129,6 @@ int main(int ac, char** av){
 
 		}
 
-		logi("Running " + instance_name);
 
 		//std::cerr<<h1.getMatrixRepresentation2(false)<<std::endl;throw;//.block(0,0,5,5)<<std::endl;
 

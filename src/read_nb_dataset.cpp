@@ -57,7 +57,7 @@ std::vector<pre_instance> read_nb_file(std::string dir_path, std::string file_na
 	for(int q = 0; q < cols-1; ++q)
 		pauliOpts.push_back(0);
 
-	FastVQA::PauliHamiltonian h(shape[0], coeffs, pauliOpts);
+	FastVQA::PauliHamiltonian h(cols-1, coeffs, pauliOpts);
     res.push_back(std::pair<std::string, FastVQA::PauliHamiltonian>(file_name, h));
 
 	return res;
