@@ -92,6 +92,8 @@ int main(int ac, char** av){
 		logi("Running " + instance_name);
 
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
+		//std::cerr<<h1.getMatrixRepresentation2(true)<<"\n";
+		//throw;
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
 			continue;
@@ -114,7 +116,7 @@ int main(int ac, char** av){
 			std::sort(evals.begin(), evals.end());
 			std::vector<double>::iterator it = evals.begin(), prev=evals.end()-1;
 
-			size_t n = 10;
+			int n = 10;
 
 			for(int i = 0; i < n && it != evals.end(); ++it){
 				if(*prev == *it)

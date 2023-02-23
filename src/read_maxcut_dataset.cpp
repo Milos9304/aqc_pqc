@@ -5,6 +5,7 @@
 #include "npy.hpp"
 #include <dirent.h>
 #include "io/logger.h"
+#include <climits>
 
 #include "FastVQA/fastVQA.h"
 
@@ -18,11 +19,11 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
 	std::string token;
 	pos = fn.find("_");
 	token = fn.substr(0, pos);
-	int num_qs = std::stoi(token);
+	//int num_qs = std::stoi(token);
 	fn.erase(0, pos + 1);
 	pos = fn.find("_");
 	token = fn.substr(0, pos);
-	int seed = std::stoi(token);
+	//int seed = std::stoi(token);
 
 	std::vector<unsigned long> shape;
 	bool fortran_order;
@@ -39,11 +40,11 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
 
     double constant=0;
 
-    for(int i = 0; i < rows; ++i){
-		for(int j = i+1; j < cols; ++j){
+    for(unsigned int i = 0; i < rows; ++i){
+		for(unsigned int j = i+1; j < cols; ++j){
 			constant -= data[i * cols+j] / 2.;
 			coeffs.push_back(data[i * cols+j] * 0.5); //wij
-	    	for(int q = 0; q < shape[0]; ++q)
+	    	for(unsigned int q = 0; q < shape[0]; ++q)
 	    		pauliOpts.push_back((q == i || q == j) ? 3 : 0); //PauliZ
     	}
     	//res.push_back(std::pair<std::string, Hamiltonian>(file_name, h));

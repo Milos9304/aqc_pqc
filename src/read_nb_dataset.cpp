@@ -29,35 +29,21 @@ std::vector<pre_instance> read_nb_file(std::string dir_path, std::string file_na
 	std::vector<double> data;
     npy::LoadArrayFromNumpy(dir_path+'/'+file_name, shape, fortran_order, data);
 
-    int rows = shape[0], cols = shape[1];
-
+    int rows = shape[0];
     std::vector<qreal> coeffs;
     std::vector<int> pauliOpts;
 
-    double constant=0;
-
     for(int i = 0; i < rows; ++i){
-		coeffs.push_back(data[i * cols]);
-		for(int q = 1; q < cols; ++q){
-			if(!(data[i * cols+q] == 3 || data[i * cols+q] == 0))
-				throw_runtime_error("Invalid dataset");
-			pauliOpts.push_back(data[i * cols+q]); //PauliZ
-		}
-    	//res.push_back(std::pair<std::string, Hamiltonian>(file_name, h));
+    	for(int j = 0; j < i; ++j){
+
+    		coeffs.push_back(data[i] * data[j]);
+    		for(int q = 0; q < rows; ++q)
+    			pauliOpts.push_back( (q == i || q == j) ? 3 : 0 );
+
+    	}
     }
 
-    //identity
-    std::vector<unsigned long> shape2;
-	bool fortran_order2;
-	std::vector<double> data2;
-    npy::LoadArrayFromNumpy(dir_path+'/'+file_name.substr(0, file_name.size()-4)+"_offset.npy", shape2, fortran_order2, data2);
-
-    constant = data2[0];
-    coeffs.push_back(constant);
-	for(int q = 0; q < cols-1; ++q)
-		pauliOpts.push_back(0);
-
-	FastVQA::PauliHamiltonian h(cols-1, coeffs, pauliOpts);
+	FastVQA::PauliHamiltonian h(rows, coeffs, pauliOpts);
     res.push_back(std::pair<std::string, FastVQA::PauliHamiltonian>(file_name, h));
 
 	return res;
