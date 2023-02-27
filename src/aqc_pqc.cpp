@@ -3,6 +3,7 @@
 #include "FastVQA/fastVQA.h"
 #include "read_maxcut_dataset.h"
 #include "read_nb_dataset.h"
+#include "read_ftim_dataset.h"
 #include <algorithm>
 
 using namespace popl;
@@ -23,6 +24,7 @@ int main(int ac, char** av){
 	auto catol			   = op.add<Value<double>>("c", "catol", "catol", 0.0002);
 	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
 	auto nb_part_dataset   = op.add<Value<std::string>>("p", "dataset2", "Dataset name for number partitioning", "");
+	auto ftim_dataset      = op.add<Value<std::string>>("f", "dataset3", "Dataset name for FTIM problem", "");
 	auto q_select          = op.add<Value<int>>("q", "num_qubits", "if set, only this number of qubits is being run. other experiments are skipped", -1);
 	auto s_select 		   = op.add<Value<int>>("", "seedselect", "if set, only this number of seed is being run. other experiments are skipped", -1);
 	auto classical_esolver = op.add<Switch>("e", "", "run classical eigensolver and compare");
@@ -47,7 +49,7 @@ int main(int ac, char** av){
 	if(opt_strategy->value() < 0 || opt_strategy->value() > 1)
 		throw_runtime_error("Invalid opt_strategy value.");
 
-	if(dataset_name->value() == "" &&  nb_part_dataset->value() == ""){
+	if(dataset_name->value() == "" &&  nb_part_dataset->value() == "" && ftim_dataset->value() == ""){
 		throw_runtime_error("No dataset specified");
 	}
 
@@ -76,6 +78,8 @@ int main(int ac, char** av){
 		dataset = read_maxcut_dataset("small/"+dataset_name->value());
 	else if(nb_part_dataset -> is_set())
 		dataset = read_nb_part_dataset("small/"+nb_part_dataset->value());
+	else if(ftim_dataset -> is_set())
+		dataset = read_ftim_dataset("small/"+ftim_dataset->value());
 	else
 		throw_runtime_error("Must specify a dataset");
 
@@ -92,8 +96,8 @@ int main(int ac, char** av){
 		logi("Running " + instance_name);
 
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
-		//std::cerr<<h1.getMatrixRepresentation2(true)<<"\n";
-		//throw;
+		std::cerr<<h1.getMatrixRepresentation2(false)<<"\n";
+		throw;
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
 			continue;

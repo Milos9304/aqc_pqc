@@ -1,3 +1,6 @@
+#ifndef AQCPQC_READ_MAXCUT_DATASET_H
+#define AQCPQC_READ_MAXCUT_DATASET_H
+
 #include <vector>
 #include <tuple>
 #include <string>
@@ -7,3 +10,5 @@
 
 std::vector<dataset_instance> read_maxcut_dataset(std::string name);
 std::map<std::string, std::vector<long long int>> read_maxcut_solutions_txt(std::ifstream *f);
+
+#endif

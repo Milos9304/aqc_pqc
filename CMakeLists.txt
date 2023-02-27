@@ -32,6 +32,7 @@ file(GLOB SRC_ORIG
 	${PROJECT_SOURCE_DIR}/src/aqc_pqc.cpp
 	${PROJECT_SOURCE_DIR}/src/read_maxcut_dataset.cpp
 	${PROJECT_SOURCE_DIR}/src/read_nb_dataset.cpp
+	${PROJECT_SOURCE_DIR}/src/read_ftim_dataset.cpp
 )
 
 set (CMAKE_CXX_FLAGS "-I ~/.local/include -L ~/.local/lib -g3 -Wall -O2")       

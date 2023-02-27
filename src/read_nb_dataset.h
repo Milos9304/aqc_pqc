@@ -1,3 +1,6 @@
+#ifndef AQCPQC_READ_NB_PART_DATASET_H
+#define AQCPQC_READ_NB_PART_DATASET_H
+
 #include <vector>
 #include <tuple>
 #include <string>
@@ -7,3 +10,5 @@
 
 std::vector<dataset_instance> read_nb_part_dataset(std::string name);
 std::map<std::string, std::vector<long long int>> read_nb_part_solutions_txt(std::ifstream *f);
+
+#endif
