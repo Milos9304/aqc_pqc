@@ -96,8 +96,6 @@ int main(int ac, char** av){
 		logi("Running " + instance_name);
 
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
-		std::cerr<<h1.getMatrixRepresentation2(false)<<"\n";
-		throw;
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
 			continue;
