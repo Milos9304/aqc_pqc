@@ -32,6 +32,7 @@ int main(int ac, char** av){
 	auto eval_limit_step   = op.add<Value<int>>("i", "iters", "max iterations per step", 600);
 	auto log_prefix		   = op.add<Value<std::string>>("", "logprefix", "log file prefix", "");
 	auto extract_evals	   = op.add<Switch>("", "evals", "save 10 eigenvalues to evals.txt only");
+	auto backup			   = op.add<Switch>("b", "backup", "Create and/or load backup after every iteration");
 
 
 	op.parse(ac, av);
@@ -131,8 +132,44 @@ int main(int ac, char** av){
 			f.close();
 			continue;
 
-		}
+		}else if(backup->is_set()){
 
+			std::string backup_name = instance_name.substr(0, instance_name.size()-4)+".bkp";
+			std::ifstream bkp_infile = std::ifstream(backup_name);
+
+			acceleratorOptions.backup = true;
+			acceleratorOptions.backup_name = backup_name;
+			std::vector<long double> angles;
+
+			if(bkp_infile.good()){
+				logi("Backup for " + instance_name + " found");
+				std::string line;
+				int line_counter = 0;
+				while (std::getline(bkp_infile, line)){
+					std::istringstream ss(line);
+					std::string angle;
+					angles.clear();
+					bool first_token=true;
+					while(getline(ss, angle, ' ')) {
+						if(!first_token)
+							angles.push_back(std::stold(angle));
+						else{
+							if(std::stoi(angle) != line_counter+1)
+								throw_runtime_error("Invalid backup file");
+							first_token = false;
+						}
+					}
+					line_counter++;
+				}
+				acceleratorOptions.start_with_step = line_counter-1;
+				acceleratorOptions.init_angles = angles;
+				acceleratorOptions.newly_created_backup = false;
+
+			}else{
+				logi("Creating backup for " + instance_name);
+				acceleratorOptions.newly_created_backup = true;
+			}
+		}
 
 		//std::cerr<<h1.getMatrixRepresentation2(false)<<std::endl;throw;//.block(0,0,5,5)<<std::endl;
 
