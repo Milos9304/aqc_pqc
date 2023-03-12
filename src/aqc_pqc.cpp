@@ -94,8 +94,6 @@ int main(int ac, char** av){
 		std::string instance_name = std::get<0>(instance);
 		std::string a = instance_name.substr(instance_name.find('_') + 1);
 
-		logi("Running " + instance_name);
-
 		FastVQA::PauliHamiltonian h1 = std::get<1>(instance);
 
 		if(q_select->value() != -1 && q_select->value() != h1.nbQubits)
@@ -103,6 +101,8 @@ int main(int ac, char** av){
 
 		if(s_select->value() > -1 && s_select->value() != std::stoi(a.substr(0, a.size()-4)))
 			continue;
+
+		logi("Running " + instance_name);
 
 		if(extract_evals->is_set()){
 			Eigen::Matrix<qreal, Eigen::Dynamic, Eigen::Dynamic> m = h1.getMatrixRepresentation2(true);

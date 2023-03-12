@@ -54,7 +54,7 @@ std::vector<pre_instance> read_file(std::string dir_path, std::string file_name)
 	//coeffs.push_back(constant);
 	//for(int q = 0; q < shape[0]; ++q)
 	//	pauliOpts.push_back(0);
-    logw("Identity not included for compatibility with Gianni's approach!"); //uncomment above
+    logi("Identity not included. See this line of code if you want to change the behaviour"); //uncomment above
 
     FastVQA::PauliHamiltonian h(shape[0], coeffs, pauliOpts);
     res.push_back(std::pair<std::string, FastVQA::PauliHamiltonian>(file_name, h));
