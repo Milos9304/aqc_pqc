@@ -20,6 +20,7 @@ int main(int ac, char** av){
 	auto round_decimals	   = op.add<Value<int>>("r", "round", "round to n decimal places. n=-1 avoids rounding", 5);
 	auto opt_strategy      = op.add<Value<int>>("o", "opt", "optimization strategy. 0=trivially, 1=rank_reduction", 0);
 	auto num_steps		   = op.add<Value<int>>("s", "steps", "number of steps", 20);
+	auto ansatz_depth	   = op.add<Value<int>>("a", "adepth", "ansatz depth", 1);
 	auto xtol			   = op.add<Value<double>>("", "xtol", "xtol", 10e-5);
 	auto catol			   = op.add<Value<double>>("c", "catol", "catol", 0.0002);
 	auto dataset_name	   = op.add<Value<std::string>>("d", "dataset", "Dataset name", "");
@@ -64,6 +65,7 @@ int main(int ac, char** av){
 	acceleratorOptions.accelerator_type = "quest";
 	acceleratorOptions.nbSteps = num_steps->value();
 	acceleratorOptions.ansatz_name = "Ry_Cz_nn_Ry";/*"Ry_CNOT_nn_Rz_CNOT_Rz"*/;/**/;
+	acceleratorOptions.ansatz_depth = ansatz_depth->value();
 	acceleratorOptions.xtol = xtol->value();
 	acceleratorOptions.catol = catol->value();
 	acceleratorOptions.compareWithClassicalEigenSolver = classical_esolver->is_set();
