@@ -147,12 +147,19 @@ int main(int ac, char** av){
 				logi("Backup for " + instance_name + " found");
 				std::string line;
 				int line_counter = 0;
+				bool skip = false;
 				while (std::getline(bkp_infile, line)){
 					std::istringstream ss(line);
 					std::string angle;
 					angles.clear();
 					bool first_token=true;
 					while(getline(ss, angle, ' ')) {
+						if(angle.substr(0,6) == "FINAL:"){
+							logi(instance_name + " has been finished before. See .bkp file");
+							bkp_infile.close();
+							skip=true;
+							break;
+						}
 						if(!first_token)
 							angles.push_back(std::stold(angle));
 						else{
@@ -160,17 +167,23 @@ int main(int ac, char** av){
 								throw_runtime_error("Invalid backup file");
 							first_token = false;
 						}
-					}
+					}if(skip)
+						break;
 					line_counter++;
 				}
+				if(skip)
+					continue;
 				acceleratorOptions.start_with_step = line_counter-1;
 				acceleratorOptions.init_angles = angles;
 				acceleratorOptions.newly_created_backup = false;
 
 			}else{
 				logi("Creating backup for " + instance_name);
+				acceleratorOptions.start_with_step = 0;
 				acceleratorOptions.newly_created_backup = true;
 			}
+		}else{
+			acceleratorOptions.start_with_step = 0;
 		}
 
 		//std::cerr<<h1.getMatrixRepresentation2(false)<<std::endl;throw;//.block(0,0,5,5)<<std::endl;
